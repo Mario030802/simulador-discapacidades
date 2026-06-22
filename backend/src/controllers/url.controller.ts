@@ -12,9 +12,11 @@ export async function loadUrl(req: Request, res: Response) {
       html,
     });
   } catch (error) {
+    console.error(error);
+
     return res.status(500).json({
-      status: "error",
-      message: "No se pudo cargar la página",
-    });
+        status: "error",
+        error,
+  });
   }
 }

@@ -1,14 +1,8 @@
 import { Router } from "express";
+import { loadUrl } from "../controllers/url.controller";
 
 const router = Router();
 
-router.post("/load", (req, res) => {
-  const { url } = req.body;
-
-  return res.json({
-    status: "ok",
-    url,
-  });
-});
+router.post("/load", loadUrl);
 
 export default router;

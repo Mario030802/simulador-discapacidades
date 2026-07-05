@@ -2,6 +2,8 @@ import { useState } from "react";
 import Viewer from "../components/Viewer";
 import { loadUrl } from "../services/api";
 import FilterPanel from "../components/FilterPanel";
+import DiagnosticPanel from "../components/DiagnosticPanel";
+import { exportReport } from "../utils/report";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -11,6 +13,12 @@ export default function Home() {
     const [deuteranopia, setDeuteranopia] = useState(false);
     const [dyslexia, setDyslexia] = useState(false);
     const [keyboardMode, setKeyboardMode] = useState(false);
+    const [diagnostics, setDiagnostics] = useState({
+  contrast: [] as string[],
+  images: [] as string[],
+  forms: [] as string[],
+});
+    
   
 
   const handleLoad = async () => {
@@ -19,45 +27,72 @@ export default function Home() {
     console.log(data);
 
     setHtml(data.html);
+    setDiagnostics(data.diagnostics);
   };
 
+  const handleExport = () => {
+  exportReport(url, diagnostics);
+};
+
   return (
-    <div>
+  <div className="container">
+    <header className="header">
       <h1>Simulador de Discapacidades</h1>
 
-      <input
-        type="text"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        placeholder="https://www.ulima.edu.pe"
-      />
+      <div className="search-bar">
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://www.ulima.edu.pe"
+        />
 
-      <button onClick={handleLoad}>
-    Analizar
-    </button>
+        <button onClick={handleLoad}>
+          Analizar
+        </button>
+      </div>
+    </header>
 
-      <FilterPanel
-        lowVision={lowVision}
-        setLowVision={setLowVision}
-        protanopia={protanopia}
-        setProtanopia={setProtanopia}
-        deuteranopia={deuteranopia}
-        setDeuteranopia={setDeuteranopia}
-        dyslexia={dyslexia}
-        setDyslexia={setDyslexia}
-        keyboardMode={keyboardMode}
-        setKeyboardMode={setKeyboardMode}
-/>
-      <hr />
+    <main className="layout">
 
-      <Viewer
-        html={html}
-        lowVision={lowVision}
-        protanopia={protanopia}
-        deuteranopia={deuteranopia}
-        dyslexia={dyslexia}
-        keyboardMode={keyboardMode}
-    />
-    </div>
-  );
+      <aside className="sidebar">
+        <h2>Filtros de simulación</h2>
+
+        <FilterPanel
+          lowVision={lowVision}
+          setLowVision={setLowVision}
+          protanopia={protanopia}
+          setProtanopia={setProtanopia}
+          deuteranopia={deuteranopia}
+          setDeuteranopia={setDeuteranopia}
+          dyslexia={dyslexia}
+          setDyslexia={setDyslexia}
+          keyboardMode={keyboardMode}
+          setKeyboardMode={setKeyboardMode}
+        />
+      </aside>
+
+      <section className="viewer-section">
+        <h2>Vista de la página</h2>
+
+        <Viewer
+          html={html}
+          lowVision={lowVision}
+          protanopia={protanopia}
+          deuteranopia={deuteranopia}
+          dyslexia={dyslexia}
+          keyboardMode={keyboardMode}
+        />
+      </section>
+
+      <aside className="diagnostic-section">
+        <h2>Diagnóstico</h2>
+
+        <DiagnosticPanel diagnostics={diagnostics}
+        onExport={handleExport} />
+      </aside>
+
+    </main>
+  </div>
+);
 }

@@ -12,8 +12,29 @@ type FilterPanelProps = {
   setDyslexia: (value: boolean) => void;
 
   keyboardMode: boolean;
-    setKeyboardMode: (value: boolean) => void;
+  setKeyboardMode: (value: boolean) => void;
 };
+
+type ToggleProps = {
+  label: string;
+  active: boolean;
+  onToggle: () => void;
+};
+
+function Toggle({ label, active, onToggle }: ToggleProps) {
+  return (
+    <div className="toggle-row">
+      <span>{label}</span>
+
+      <button
+        className={`toggle ${active ? "active" : ""}`}
+        onClick={onToggle}
+      >
+        <div className="toggle-circle"></div>
+      </button>
+    </div>
+  );
+}
 
 export default function FilterPanel({
   lowVision,
@@ -29,27 +50,37 @@ export default function FilterPanel({
 }: FilterPanelProps) {
   return (
     <div>
-      <h3>Filtros</h3>
 
-      <button onClick={() => setLowVision(!lowVision)}>
-        Baja Visión
-      </button>
+      <Toggle
+        label="Baja Visión"
+        active={lowVision}
+        onToggle={() => setLowVision(!lowVision)}
+      />
 
-      <button onClick={() => setProtanopia(!protanopia)}>
-        Protanopia
-      </button>
+      <Toggle
+        label="Protanopia"
+        active={protanopia}
+        onToggle={() => setProtanopia(!protanopia)}
+      />
 
-      <button onClick={() => setDeuteranopia(!deuteranopia)}>
-        Deuteranopia
-      </button>
+      <Toggle
+        label="Deuteranopia"
+        active={deuteranopia}
+        onToggle={() => setDeuteranopia(!deuteranopia)}
+      />
 
-      <button onClick={() => setDyslexia(!dyslexia)}>
-        Dislexia
-      </button>
+      <Toggle
+        label="Dislexia"
+        active={dyslexia}
+        onToggle={() => setDyslexia(!dyslexia)}
+      />
 
-      <button onClick={() => setKeyboardMode(!keyboardMode)}>
-        Modo Teclado
-        </button>
+      <Toggle
+        label="Modo teclado"
+        active={keyboardMode}
+        onToggle={() => setKeyboardMode(!keyboardMode)}
+      />
+
     </div>
   );
 }

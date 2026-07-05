@@ -16,25 +16,26 @@ export default function Viewer({
   keyboardMode,
 }: ViewerProps) {
   return (
+  <div className="viewer-card">
+
+    <div className="viewer-header">
+      Mi Página Web
+    </div>
+
     <div
-      style={{
-        filter: lowVision
-            ? "blur(8px) contrast(70%)"
-            : protanopia
-            ? "grayscale(100%)"
-            : deuteranopia
-            ? "sepia(100%)"
-            : "none",
+  className={`
+    viewer-content
+    ${lowVision ? "low-vision" : ""}
+    ${protanopia ? "protanopia" : ""}
+    ${deuteranopia ? "deuteranopia" : ""}
+    ${dyslexia ? "dyslexia" : ""}
+    ${keyboardMode ? "keyboard-mode" : ""}
+  `}
+  dangerouslySetInnerHTML={{
+    __html: html,
+  }}
+/>
 
-        letterSpacing: dyslexia ? "3px" : "normal",
-        lineHeight: dyslexia ? "2" : "normal",
-
-        outline: keyboardMode ? "4px solid yellow" : "none",
-      }}
-
-      dangerouslySetInnerHTML={{
-        __html: html,
-      }}
-    />
-  );
+  </div>
+);
 }

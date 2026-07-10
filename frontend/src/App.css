@@ -236,3 +236,7 @@ body{
     outline-offset:3px;
     border-radius:4px;
 }
+
+.tritanopia{
+    filter:hue-rotate(75deg) saturate(0.6) brightness(1.05);
+}

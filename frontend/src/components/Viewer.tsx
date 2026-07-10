@@ -3,6 +3,7 @@ type ViewerProps = {
   lowVision: boolean;
   protanopia: boolean;
   deuteranopia: boolean;
+  tritanopia: boolean;
   dyslexia: boolean;
   keyboardMode:boolean;
 };
@@ -12,6 +13,7 @@ export default function Viewer({
   lowVision,
   protanopia,
   deuteranopia,
+  tritanopia,
   dyslexia,
   keyboardMode,
 }: ViewerProps) {
@@ -28,6 +30,7 @@ export default function Viewer({
     ${lowVision ? "low-vision" : ""}
     ${protanopia ? "protanopia" : ""}
     ${deuteranopia ? "deuteranopia" : ""}
+    ${tritanopia ? "tritanopia" : ""}
     ${dyslexia ? "dyslexia" : ""}
     ${keyboardMode ? "keyboard-mode" : ""}
   `}

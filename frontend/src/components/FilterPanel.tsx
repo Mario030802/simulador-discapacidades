@@ -8,6 +8,9 @@ type FilterPanelProps = {
   deuteranopia: boolean;
   setDeuteranopia: (value: boolean) => void;
 
+  tritanopia: boolean;
+  setTritanopia: (value: boolean) => void;
+
   dyslexia: boolean;
   setDyslexia: (value: boolean) => void;
 
@@ -43,6 +46,8 @@ export default function FilterPanel({
   setProtanopia,
   deuteranopia,
   setDeuteranopia,
+  tritanopia,
+  setTritanopia,
   dyslexia,
   setDyslexia,
   keyboardMode,
@@ -67,6 +72,12 @@ export default function FilterPanel({
         label="Deuteranopia"
         active={deuteranopia}
         onToggle={() => setDeuteranopia(!deuteranopia)}
+      />
+
+      <Toggle
+        label="Tritanopia"
+        active={tritanopia}
+        onToggle={() => setTritanopia(!tritanopia)}
       />
 
       <Toggle

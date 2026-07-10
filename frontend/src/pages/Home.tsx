@@ -18,6 +18,7 @@ export default function Home() {
   images: [] as string[],
   forms: [] as string[],
 });
+    const [tritanopia, setTritanopia] = useState(false);
     
   
 
@@ -69,6 +70,8 @@ export default function Home() {
           setDyslexia={setDyslexia}
           keyboardMode={keyboardMode}
           setKeyboardMode={setKeyboardMode}
+          tritanopia={tritanopia}
+          setTritanopia={setTritanopia}
         />
       </aside>
 
@@ -80,6 +83,7 @@ export default function Home() {
           lowVision={lowVision}
           protanopia={protanopia}
           deuteranopia={deuteranopia}
+          tritanopia={tritanopia}
           dyslexia={dyslexia}
           keyboardMode={keyboardMode}
         />

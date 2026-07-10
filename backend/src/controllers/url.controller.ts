@@ -6,7 +6,7 @@ export async function loadUrl(req: Request, res: Response) {
   try {
     const { url } = req.body;
 
-    const html = await fetchPage(url);
+    const { html, screenshot } = await fetchPage(url);
 
     const contrastIssues = checkContrast(html);
 
@@ -16,14 +16,15 @@ export async function loadUrl(req: Request, res: Response) {
   checkFormsWithoutLabels(html);
 
     return res.json({
-      status: "ok",
-      html,
-      diagnostics: {
-        contrast: contrastIssues,
-        images: imageIssues,
-        forms: formIssues,
-      },
-    });
+  status: "ok",
+  html,
+  screenshot,
+  diagnostics: {
+    contrast: contrastIssues,
+    images: imageIssues,
+    forms: formIssues,
+  },
+});
   } catch (error) {
     console.error(error);
 

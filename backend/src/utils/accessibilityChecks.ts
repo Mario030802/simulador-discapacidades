@@ -1,23 +1,6 @@
-export function checkContrast(html: string) {
-  const issues: string[] = [];
-
-  const suspiciousColors = [
-    "#ccc",
-    "#ddd",
-    "#eee",
-    "lightgray",
-  ];
-
-  for (const color of suspiciousColors) {
-    if (html.includes(color)) {
-      issues.push(
-        `Posible problema de contraste: ${color}`
-      );
-    }
-  }
-
-  return issues;
-}
+// Nota: el chequeo de contraste ya NO vive aquí. Se movió a una medición real
+// WCAG dentro de Puppeteer (ver utils/contrastCheck.ts), porque el contraste
+// necesita los colores computados de la página renderizada, no el string HTML.
 
 export function checkImagesWithoutAlt(
   html: string

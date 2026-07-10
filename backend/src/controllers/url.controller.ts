@@ -1,14 +1,16 @@
 import { Request, Response } from "express";
 import { fetchPage } from "../services/proxy.service";
-import { checkContrast, checkImagesWithoutAlt, checkFormsWithoutLabels } from "../utils/accessibilityChecks";
+import { checkImagesWithoutAlt, checkFormsWithoutLabels } from "../utils/accessibilityChecks";
 
 export async function loadUrl(req: Request, res: Response) {
   try {
     const { url } = req.body;
 
-    const { html, screenshot } = await fetchPage(url);
+    const { html, screenshot, contrast } = await fetchPage(url);
 
-    const contrastIssues = checkContrast(html);
+    // El contraste ahora se mide de verdad (WCAG) dentro de Puppeteer; llega ya
+    // calculado desde fetchPage. alt e inputs siguen con los checks sobre el HTML.
+    const contrastIssues = contrast;
 
     const imageIssues = checkImagesWithoutAlt(html);
 

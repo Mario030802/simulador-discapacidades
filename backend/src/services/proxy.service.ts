@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
+import { measureContrast } from "../utils/contrastCheck";
 
 export async function fetchPage(url: string) {
 
@@ -33,6 +34,10 @@ export async function fetchPage(url: string) {
      fullPage: true,
 });
 
+    // Contraste real WCAG: se mide sobre la página viva (getComputedStyle) antes
+    // de cerrar el navegador. Devuelve la lista de hallazgos por elemento.
+    const contrast = await measureContrast(page);
+
     const $ = cheerio.load(html);
 
     // Inyecta <base> como primer hijo de <head> para que CSS/JS/fuentes/imágenes
@@ -56,6 +61,7 @@ export async function fetchPage(url: string) {
     return {
       html: $.html(),
      screenshot,
+      contrast,
     };
 
   } finally {

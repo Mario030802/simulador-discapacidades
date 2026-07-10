@@ -217,25 +217,13 @@ body{
 
 /* ---------- Simulaciones ---------- */
 
-.low-vision{
-    filter:blur(4px) contrast(.7);
-}
-
-.protanopia{
-    filter:hue-rotate(-25deg) saturate(.65);
-}
-
-.deuteranopia{
-    filter:hue-rotate(35deg) saturate(.6);
-}
-
-.tritanopia{
-    filter:hue-rotate(75deg) saturate(0.6) brightness(1.05);
-}
-
-/* Dislexia y modo teclado (foco) ya NO viven aquí: se inyectan DENTRO del
-   documento del iframe (ver Viewer.tsx, clases sim-dyslexia / sim-keyboard),
-   porque el CSS del padre no cruza la frontera del iframe. */
+/* Los filtros de simulación ya NO viven en App.css:
+   - Daltonismo (protanopia/deuteranopia/tritanopia) = matrices SVG feColorMatrix
+     (Machado 2009) y baja visión (blur+contrast) se aplican como un `filter` inline
+     ENCADENADO sobre el iframe (ver Viewer.tsx).
+   - Dislexia y modo teclado (foco) se inyectan DENTRO del documento del iframe
+     (Viewer.tsx, clases sim-dyslexia / sim-keyboard), porque el CSS del padre no
+     cruza la frontera del iframe. */
 
 .error-msg{
     color:#b91c1c;

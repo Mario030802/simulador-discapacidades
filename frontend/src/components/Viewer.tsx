@@ -13,17 +13,38 @@ type ViewerProps = {
 // Estilos que se inyectan DENTRO del documento del iframe. La dislexia (texto vivo)
 // y el resaltado de foco (HU7) no cruzan la frontera del iframe desde el CSS del
 // padre, así que viven aquí, gateados por clases en el <html> del propio iframe.
-const SIM_STYLES = `
-  html.sim-dyslexia body, html.sim-dyslexia body * {
-    font-family: Arial, Helvetica, sans-serif !important;
-    letter-spacing: 2px !important;
-    line-height: 2 !important;
-  }
-  html.sim-keyboard *:focus {
-    outline: 3px solid #2563eb !important;
-    outline-offset: 3px !important;
-  }
-`;
+//
+// La fuente OpenDyslexic se sirve local desde public/fonts. La URL del @font-face
+// DEBE ser absoluta al origen del frontend: el doc del iframe tiene <base href="sitio">,
+// y una url() relativa resolvería contra el sitio destino. El iframe es same-origin
+// (srcDoc + allow-same-origin), así que la fuente carga sin CORS.
+function buildSimStyles(origin: string): string {
+  return `
+    @font-face {
+      font-family: "OpenDyslexic";
+      src: url("${origin}/fonts/OpenDyslexic-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "OpenDyslexic";
+      src: url("${origin}/fonts/OpenDyslexic-Bold.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    html.sim-dyslexia body, html.sim-dyslexia body * {
+      font-family: "OpenDyslexic", Arial, Helvetica, sans-serif !important;
+      letter-spacing: 2px !important;
+      line-height: 2 !important;
+    }
+    html.sim-keyboard *:focus {
+      outline: 3px solid #2563eb !important;
+      outline-offset: 3px !important;
+    }
+  `;
+}
 
 export default function Viewer({
   html,
@@ -55,7 +76,7 @@ export default function Viewer({
       if (!doc.getElementById("sim-injected-styles")) {
         const style = doc.createElement("style");
         style.id = "sim-injected-styles";
-        style.textContent = SIM_STYLES;
+        style.textContent = buildSimStyles(window.location.origin);
         (doc.head || doc.documentElement).appendChild(style);
       }
       applyClasses(doc);

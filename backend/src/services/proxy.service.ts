@@ -2,6 +2,29 @@ import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import { measureContrast } from "../utils/contrastCheck";
 
+// Auto-scroll acotado (corre en el navegador; se pasa como STRING para no chocar con
+// los tipos de Node). Baja por pasos hasta el fondo o un tope, y vuelve arriba. Dispara
+// el contenido con carga perezosa (lazy) para que el screenshot y el HTML lo incluyan.
+// Tope duro (maxIter) para no colgarse en páginas de scroll infinito.
+const AUTO_SCROLL = `
+  new Promise((resolve) => {
+    let total = 0;
+    let iterations = 0;
+    const step = window.innerHeight;
+    const maxIter = 40;
+    const timer = setInterval(() => {
+      window.scrollBy(0, step);
+      total += step;
+      iterations++;
+      if (total >= document.body.scrollHeight || iterations >= maxIter) {
+        clearInterval(timer);
+        window.scrollTo(0, 0);
+        resolve(true);
+      }
+    }, 200);
+  })
+`;
+
 export async function fetchPage(url: string) {
 
   const browser = await puppeteer.launch({
@@ -25,6 +48,11 @@ export async function fetchPage(url: string) {
       waitUntil: "networkidle2",
       timeout: 30000,
     });
+
+    // Dispara el contenido lazy antes de capturar; luego un respiro para que las
+    // imágenes recién pedidas terminen de cargar.
+    await page.evaluate(AUTO_SCROLL);
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     const html = await page.content();
 

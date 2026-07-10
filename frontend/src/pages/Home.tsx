@@ -17,6 +17,8 @@ export default function Home() {
   const [screenReader, setScreenReader] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [screenshot, setScreenshot] = useState("");
+  const [faithfulView, setFaithfulView] = useState(false);
   const [diagnostics, setDiagnostics] = useState({
     contrast: [] as string[],
     images: [] as string[],
@@ -36,6 +38,7 @@ export default function Home() {
     try {
       const data = await loadUrl(trimmed);
       setHtml(data.html);
+      setScreenshot(data.screenshot || "");
       setDiagnostics(data.diagnostics);
     } catch (e) {
       setError(
@@ -44,6 +47,7 @@ export default function Home() {
           : "No se pudo cargar la página. Revisa la URL e inténtalo de nuevo."
       );
       setHtml("");
+      setScreenshot("");
     } finally {
       setLoading(false);
     }
@@ -75,6 +79,18 @@ export default function Home() {
       setter(value);
       if (value) setScreenReader(false);
     };
+
+  // La "Vista fiel" muestra la captura (imagen) en vez del iframe. Sobre una imagen los
+  // filtros de DOM/texto (dislexia, teclado/foco, lector) no tienen sentido: al entrar
+  // se apagan y sus toggles quedan deshabilitados. Los filtros de color sí aplican.
+  const handleFaithfulView = (value: boolean) => {
+    setFaithfulView(value);
+    if (value) {
+      setDyslexia(false);
+      setKeyboardMode(false);
+      setScreenReader(false);
+    }
+  };
 
   return (
     <div className="container">
@@ -120,14 +136,34 @@ export default function Home() {
             setTritanopia={visualSetter(setTritanopia)}
             screenReader={screenReader}
             setScreenReader={handleScreenReader}
+            disableInteractive={faithfulView}
           />
         </aside>
 
         <section className="viewer-section">
-          <h2>Vista de la página</h2>
+          <div className="viewer-section-head">
+            <h2>Vista de la página</h2>
+
+            <div className="view-switch" role="group" aria-label="Modo de vista">
+              <button
+                className={!faithfulView ? "active" : ""}
+                onClick={() => handleFaithfulView(false)}
+              >
+                Vista viva
+              </button>
+              <button
+                className={faithfulView ? "active" : ""}
+                onClick={() => handleFaithfulView(true)}
+              >
+                Vista fiel (captura)
+              </button>
+            </div>
+          </div>
 
           <Viewer
             html={html}
+            screenshot={screenshot}
+            faithfulView={faithfulView}
             lowVision={lowVision}
             protanopia={protanopia}
             deuteranopia={deuteranopia}

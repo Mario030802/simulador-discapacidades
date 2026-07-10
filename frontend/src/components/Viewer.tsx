@@ -3,6 +3,8 @@ import { buildReadingOrder, describe, type SrStop } from "../utils/screenReader"
 
 type ViewerProps = {
   html: string;
+  screenshot: string;
+  faithfulView: boolean;
   lowVision: boolean;
   protanopia: boolean;
   deuteranopia: boolean;
@@ -56,6 +58,8 @@ function buildSimStyles(origin: string): string {
 
 export default function Viewer({
   html,
+  screenshot,
+  faithfulView,
   lowVision,
   protanopia,
   deuteranopia,
@@ -157,16 +161,33 @@ export default function Viewer({
     <div className="viewer-card">
       <div className="viewer-header">Mi Página Web</div>
 
-      <iframe
-        ref={iframeRef}
-        className="viewer-frame"
-        title="Vista de la página cargada"
-        sandbox="allow-same-origin"
-        srcDoc={html}
-        style={{ filter }}
-      />
+      {faithfulView ? (
+        screenshot ? (
+          // Vista fiel: la captura PNG de Chromium (JS del sitio ya ejecutado). El
+          // filter de color aplica igual sobre un <img>. Es estática (sin interacción).
+          <img
+            className="viewer-frame"
+            style={{ filter }}
+            src={`data:image/png;base64,${screenshot}`}
+            alt="Captura fiel de la página cargada"
+          />
+        ) : (
+          <p className="viewer-empty">
+            No hay captura disponible. Analiza una URL primero.
+          </p>
+        )
+      ) : (
+        <iframe
+          ref={iframeRef}
+          className="viewer-frame"
+          title="Vista de la página cargada"
+          sandbox="allow-same-origin"
+          srcDoc={html}
+          style={{ filter }}
+        />
+      )}
 
-      {screenReader && (
+      {!faithfulView && screenReader && (
         <div
           className="sr-panel"
           tabIndex={0}

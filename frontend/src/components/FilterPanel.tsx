@@ -19,22 +19,26 @@ type FilterPanelProps = {
 
   screenReader: boolean;
   setScreenReader: (value: boolean) => void;
+
+  disableInteractive: boolean;
 };
 
 type ToggleProps = {
   label: string;
   active: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 };
 
-function Toggle({ label, active, onToggle }: ToggleProps) {
+function Toggle({ label, active, onToggle, disabled }: ToggleProps) {
   return (
-    <div className="toggle-row">
+    <div className={`toggle-row ${disabled ? "disabled" : ""}`}>
       <span>{label}</span>
 
       <button
         className={`toggle ${active ? "active" : ""}`}
         onClick={onToggle}
+        disabled={disabled}
       >
         <div className="toggle-circle"></div>
       </button>
@@ -57,6 +61,7 @@ export default function FilterPanel({
   setKeyboardMode,
   screenReader,
   setScreenReader,
+  disableInteractive,
 }: FilterPanelProps) {
   return (
     <div>
@@ -89,19 +94,29 @@ export default function FilterPanel({
         label="Dislexia"
         active={dyslexia}
         onToggle={() => setDyslexia(!dyslexia)}
+        disabled={disableInteractive}
       />
 
       <Toggle
         label="Modo teclado"
         active={keyboardMode}
         onToggle={() => setKeyboardMode(!keyboardMode)}
+        disabled={disableInteractive}
       />
 
       <Toggle
         label="Lector de pantalla"
         active={screenReader}
         onToggle={() => setScreenReader(!screenReader)}
+        disabled={disableInteractive}
       />
+
+      {disableInteractive && (
+        <p className="filter-note">
+          Dislexia, modo teclado y lector de pantalla no aplican en la vista fiel
+          (es una imagen). Usa la vista viva para esos modos.
+        </p>
+      )}
 
     </div>
   );

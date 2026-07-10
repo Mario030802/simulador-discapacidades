@@ -16,6 +16,9 @@ type FilterPanelProps = {
 
   keyboardMode: boolean;
   setKeyboardMode: (value: boolean) => void;
+
+  screenReader: boolean;
+  setScreenReader: (value: boolean) => void;
 };
 
 type ToggleProps = {
@@ -52,6 +55,8 @@ export default function FilterPanel({
   setDyslexia,
   keyboardMode,
   setKeyboardMode,
+  screenReader,
+  setScreenReader,
 }: FilterPanelProps) {
   return (
     <div>
@@ -90,6 +95,12 @@ export default function FilterPanel({
         label="Modo teclado"
         active={keyboardMode}
         onToggle={() => setKeyboardMode(!keyboardMode)}
+      />
+
+      <Toggle
+        label="Lector de pantalla"
+        active={screenReader}
+        onToggle={() => setScreenReader(!screenReader)}
       />
 
     </div>

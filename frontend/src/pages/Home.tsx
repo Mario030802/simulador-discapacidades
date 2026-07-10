@@ -14,6 +14,7 @@ export default function Home() {
   const [dyslexia, setDyslexia] = useState(false);
   const [keyboardMode, setKeyboardMode] = useState(false);
   const [tritanopia, setTritanopia] = useState(false);
+  const [screenReader, setScreenReader] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [diagnostics, setDiagnostics] = useState({
@@ -52,6 +53,29 @@ export default function Home() {
     exportReport(url, diagnostics);
   };
 
+  // El lector de pantalla es EXCLUYENTE con los filtros visuales: un usuario ciego
+  // no ve daltonismo/baja visión/dislexia/foco. Activar el lector apaga esos filtros;
+  // activar cualquier filtro visual apaga el lector. Así nunca quedan a la vez.
+  const clearVisualFilters = () => {
+    setLowVision(false);
+    setProtanopia(false);
+    setDeuteranopia(false);
+    setTritanopia(false);
+    setDyslexia(false);
+    setKeyboardMode(false);
+  };
+
+  const handleScreenReader = (value: boolean) => {
+    setScreenReader(value);
+    if (value) clearVisualFilters();
+  };
+
+  const visualSetter =
+    (setter: (v: boolean) => void) => (value: boolean) => {
+      setter(value);
+      if (value) setScreenReader(false);
+    };
+
   return (
     <div className="container">
       <header className="header">
@@ -83,17 +107,19 @@ export default function Home() {
 
           <FilterPanel
             lowVision={lowVision}
-            setLowVision={setLowVision}
+            setLowVision={visualSetter(setLowVision)}
             protanopia={protanopia}
-            setProtanopia={setProtanopia}
+            setProtanopia={visualSetter(setProtanopia)}
             deuteranopia={deuteranopia}
-            setDeuteranopia={setDeuteranopia}
+            setDeuteranopia={visualSetter(setDeuteranopia)}
             dyslexia={dyslexia}
-            setDyslexia={setDyslexia}
+            setDyslexia={visualSetter(setDyslexia)}
             keyboardMode={keyboardMode}
-            setKeyboardMode={setKeyboardMode}
+            setKeyboardMode={visualSetter(setKeyboardMode)}
             tritanopia={tritanopia}
-            setTritanopia={setTritanopia}
+            setTritanopia={visualSetter(setTritanopia)}
+            screenReader={screenReader}
+            setScreenReader={handleScreenReader}
           />
         </aside>
 
@@ -108,6 +134,7 @@ export default function Home() {
             tritanopia={tritanopia}
             dyslexia={dyslexia}
             keyboardMode={keyboardMode}
+            screenReader={screenReader}
           />
         </section>
 

@@ -19,6 +19,7 @@ export default function Home() {
   forms: [] as string[],
 });
     const [tritanopia, setTritanopia] = useState(false);
+    const [screenshot, setScreenshot] = useState("");
     
   
 
@@ -28,6 +29,7 @@ export default function Home() {
     console.log(data);
 
     setHtml(data.html);
+    setScreenshot(data.screenshot);
     setDiagnostics(data.diagnostics);
   };
 
@@ -80,6 +82,7 @@ export default function Home() {
 
         <Viewer
           html={html}
+          screenshot={screenshot}
           lowVision={lowVision}
           protanopia={protanopia}
           deuteranopia={deuteranopia}

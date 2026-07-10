@@ -1,5 +1,6 @@
 type ViewerProps = {
   html: string;
+  screenshot: string;
   lowVision: boolean;
   protanopia: boolean;
   deuteranopia: boolean;
@@ -10,6 +11,7 @@ type ViewerProps = {
 
 export default function Viewer({
   html,
+  screenshot,
   lowVision,
   protanopia,
   deuteranopia,

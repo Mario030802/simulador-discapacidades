@@ -1,122 +1,79 @@
-Antes de hacer el git push, lo mejor es que les pases instrucciones claras para que cualquier integrante pueda clonar el proyecto y ejecutarlo en 10 minutos.
+# Simulador de Discapacidades
 
-Requisitos que deben tener instalados
-1. Node.js
+Prototipo del curso de Interacción Humano-Computadora. El usuario pega la URL de una página, el backend la
+renderiza con un navegador headless (Puppeteer), y el frontend la muestra dentro de un iframe con filtros que
+simulan condiciones (daltonismo, baja visión, dislexia), navegación por teclado con resaltado de foco, y un
+panel de chequeos básicos de accesibilidad.
 
-Versión recomendada:
+Estas instrucciones sirven para que cualquier integrante clone el proyecto y lo levante rápido.
 
-Node.js 22 LTS
+## Requisitos
 
-Verificar:
+Solo se necesita instalado globalmente:
 
-node -v
-npm -v
-2. PostgreSQL
+1. **Node.js** (recomendado 22 LTS). Verificar: `node -v` y `npm -v`.
+2. **Git**. Verificar: `git --version`.
+3. **Visual Studio Code** (opcional), con extensiones ESLint y Prettier.
 
-Versión recomendada:
+No hace falta instalar PostgreSQL. El proyecto trae Prisma/Postgres configurado, pero **hoy la base de datos
+está inerte**: ninguna parte del código la usa, así que no hay que crear base de datos ni correr migraciones
+para que el prototipo funcione. (Ver nota al final.)
 
-PostgreSQL 17
+## Cómo levantar el proyecto
 
-Verificar:
+Clonar:
 
-psql --version
-
-También pueden usar pgAdmin.
-
-3. Git
-
-Verificar:
-
-git --version
-4. Visual Studio Code
-
-Con extensiones:
-
-ESLint
-Prettier
-Prisma
-Cómo levantar el proyecto
-Clonar
+```
 git clone https://github.com/Mario030802/simulador-discapacidades.git
 cd simulador-discapacidades
-Backend
+```
 
-Entrar:
+### Backend
 
+```
 cd backend
-
-Instalar dependencias:
-
 npm install
-
-Crear .env
-
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/accessibility_simulator"
-Base de datos
-
-Crear:
-
-CREATE DATABASE accessibility_simulator;
-Prisma
-
-Ejecutar:
-
-npx prisma migrate dev
-Levantar backend
 npm run dev
+```
 
-Debe aparecer:
+`npm install` descarga las dependencias y, la primera vez, **Puppeteer baja su propio Chromium** (pesa y
+tarda ~1 minuto). Al levantar debe aparecer:
 
+```
 Servidor ejecutándose en puerto 3000
-Frontend
+```
 
-Abrir otra terminal:
+No hace falta crear `.env` para correr el prototipo (el puerto está fijo en 3000 y el código no lee la base
+de datos).
 
+### Frontend
+
+En otra terminal:
+
+```
 cd frontend
-
-Instalar:
-
 npm install
-
-Levantar:
-
 npm run dev
+```
 
-Debe aparecer:
+Debe aparecer una URL local, normalmente `http://localhost:5173` (si ese puerto está ocupado, Vite usa el
+siguiente libre, p. ej. `5174`).
 
-http://localhost:5173
-Dependencias actuales
-Backend
-express
-cors
-axios
-cheerio
-prisma
-@prisma/client
-dotenv
-typescript
-ts-node-dev
-Frontend
-react
-vite
-typescript
-Lo más importante
+Por defecto el frontend le pega al backend en `http://localhost:3000`. Si necesitas cambiarlo, copia
+`frontend/.env.example` a `frontend/.env` y ajusta `VITE_API_URL`.
 
-Tus compañeros NO necesitan instalar manualmente:
+## Dependencias reales
 
-express
-axios
-react
-vite
-prisma
+**Backend:** express, cors, cheerio, dotenv, puppeteer, prisma, @prisma/client (más TypeScript y ts-node-dev
+para desarrollo). El fetch/render lo hace **Puppeteer**; cheerio solo posprocesa el HTML (inyecta `<base>` y
+reescribe `<img src>` a absolutas).
 
-porque eso se descarga automáticamente con:
+**Frontend:** react, react-dom, vite, typescript (más ESLint para desarrollo).
 
-npm install
+Tus compañeros no instalan estas dependencias a mano: se bajan con `npm install`.
 
-Lo único que sí deben tener instalado globalmente es:
+## Nota sobre la base de datos (Prisma/Postgres)
 
-Node.js
-PostgreSQL
-Git
-VS Code
+El repo incluye un `schema.prisma` con un modelo `Analysis` y `prisma.config.ts`, pero **el código no guarda
+ni lee nada de la base de datos**. Está dejado como configuración para un posible trabajo futuro de
+persistencia. Mientras siga inerte, no necesitas Postgres ni correr `prisma migrate`.

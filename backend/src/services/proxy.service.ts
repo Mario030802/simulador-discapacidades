@@ -35,6 +35,16 @@ export async function fetchPage(url: string) {
 
     const $ = cheerio.load(html);
 
+    // Inyecta <base> como primer hijo de <head> para que CSS/JS/fuentes/imágenes
+    // con rutas relativas o root-relative resuelvan contra el sitio destino y no
+    // contra el origen del frontend. Es lo que hace que la página se vea completa
+    // dentro del iframe. Escapamos comillas para no romper el atributo.
+    const safeUrl = url.replace(/"/g, "%22");
+    if ($("head").length === 0) {
+      $("html").prepend("<head></head>");
+    }
+    $("head").prepend(`<base href="${safeUrl}">`);
+
     $("img").each((_, element) => {
       const src = $(element).attr("src");
 

@@ -10,5 +10,15 @@ export async function loadUrl(url: string) {
     }
   );
 
-  return response.json();
+  if (!response.ok) {
+    throw new Error(`El servidor respondió con estado ${response.status}.`);
+  }
+
+  const data = await response.json();
+
+  if (data.status !== "ok") {
+    throw new Error(data.message || "No se pudo analizar la página.");
+  }
+
+  return data;
 }

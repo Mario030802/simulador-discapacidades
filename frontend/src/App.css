@@ -151,11 +151,12 @@ body{
     font-size:16px;
 }
 
-.viewer-content{
+.viewer-frame{
+    display:block;
+    width:100%;
     min-height:900px;
+    border:none;
     background:white;
-    padding: 20px;
-    overflow:auto;
 }
 
 /* ---------- Diagnóstico ---------- */
@@ -228,22 +229,16 @@ body{
     filter:hue-rotate(35deg) saturate(.6);
 }
 
-.dyslexia{
-    font-family:Arial, sans-serif;
-    letter-spacing:2px;
-    line-height:2;
-}
-
-.keyboard-mode a,
-.keyboard-mode button,
-.keyboard-mode input,
-.keyboard-mode select,
-.keyboard-mode textarea{
-    outline:3px solid #2563eb !important;
-    outline-offset:3px;
-    border-radius:4px;
-}
-
 .tritanopia{
     filter:hue-rotate(75deg) saturate(0.6) brightness(1.05);
+}
+
+/* Dislexia y modo teclado (foco) ya NO viven aquí: se inyectan DENTRO del
+   documento del iframe (ver Viewer.tsx, clases sim-dyslexia / sim-keyboard),
+   porque el CSS del padre no cruza la frontera del iframe. */
+
+.error-msg{
+    color:#b91c1c;
+    margin-top:14px;
+    font-weight:500;
 }

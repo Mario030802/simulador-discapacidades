@@ -1,9 +1,10 @@
 import type { Page } from "puppeteer";
+import type { Finding } from "../types";
 
 // Mide el contraste WCAG 2.1 DENTRO de la página renderizada por Puppeteer.
 // El código corre en el contexto del navegador (ahí sí existen document /
 // getComputedStyle); se pasa como STRING a page.evaluate para no chocar con los
-// tipos de Node en el backend. Devuelve una lista de hallazgos (string[]),
+// tipos de Node en el backend. Devuelve una lista de hallazgos (Finding[]),
 // uno por elemento con texto directo cuyo ratio texto/fondo no cumple el umbral AA.
 //
 // Umbral AA: 4.5:1 texto normal, 3.0:1 texto grande (>=24px, o >=18.66px en negrita).
@@ -74,20 +75,23 @@ const BROWSER_CONTRAST = `
       if (r < threshold) {
         if (findings.length < MAX) {
           const txt = (el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 40);
-          findings.push('Contraste bajo ' + r.toFixed(2) + ':1 (mín ' + threshold + ') en <' + el.tagName.toLowerCase() + '>: ' + txt);
+          findings.push({
+            message: 'Contraste bajo ' + r.toFixed(2) + ':1 (mín ' + threshold + ')',
+            location: '<' + el.tagName.toLowerCase() + '>: ' + txt,
+          });
         } else { extra++; }
       }
     } catch (e) { /* saltar elemento problemático */ }
   }
-  if (extra > 0) findings.push('… y ' + extra + ' más con contraste bajo');
+  if (extra > 0) findings.push({ message: '… y ' + extra + ' más con contraste bajo', location: '' });
   return findings;
 })()
 `;
 
-export async function measureContrast(page: Page): Promise<string[]> {
+export async function measureContrast(page: Page): Promise<Finding[]> {
   try {
     const result = await page.evaluate(BROWSER_CONTRAST);
-    return Array.isArray(result) ? (result as string[]) : [];
+    return Array.isArray(result) ? (result as Finding[]) : [];
   } catch (e) {
     console.error("measureContrast falló:", e);
     return [];

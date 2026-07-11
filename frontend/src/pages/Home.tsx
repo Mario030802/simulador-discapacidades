@@ -4,6 +4,7 @@ import { loadUrl } from "../services/api";
 import FilterPanel from "../components/FilterPanel";
 import DiagnosticPanel from "../components/DiagnosticPanel";
 import { exportReport } from "../utils/report";
+import type { Diagnostics } from "../utils/wcag";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -19,10 +20,10 @@ export default function Home() {
   const [error, setError] = useState("");
   const [screenshot, setScreenshot] = useState("");
   const [faithfulView, setFaithfulView] = useState(false);
-  const [diagnostics, setDiagnostics] = useState({
-    contrast: [] as string[],
-    images: [] as string[],
-    forms: [] as string[],
+  const [diagnostics, setDiagnostics] = useState<Diagnostics>({
+    contrast: [],
+    images: [],
+    forms: [],
   });
 
   const handleLoad = async () => {

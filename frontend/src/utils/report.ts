@@ -1,8 +1,64 @@
-type Diagnostics = {
-  contrast: string[];
-  images: string[];
-  forms: string[];
-};
+import { CATEGORY_META } from "./wcag";
+import type { CategoryKey, Diagnostics, Finding } from "./wcag";
+
+// El reporte se arma interpolando strings en HTML: todo dato que venga de la
+// página analizada (ubicaciones con <p>, <input ...>, la propia URL) debe
+// escaparse para que se lea como texto y no se parsee como etiquetas.
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function summaryRow(key: CategoryKey, issues: Finding[]): string {
+  const meta = CATEGORY_META[key];
+  const ok = issues.length === 0;
+  return `
+<tr>
+<td>${meta.title}</td>
+<td>${meta.wcag}</td>
+<td class="${ok ? "ok" : "error"}">
+${ok ? "Sin problemas" : issues.length + " problemas"}
+</td>
+</tr>
+`;
+}
+
+// Sección de detalle por categoría: criterio + cómo corregir UNA vez, y una
+// tabla con la ubicación y el detalle de cada hallazgo. Se omite si no hay.
+function detailSection(key: CategoryKey, issues: Finding[]): string {
+  if (issues.length === 0) return "";
+  const meta = CATEGORY_META[key];
+  const rows = issues
+    .map(
+      (f, i) => `
+<tr>
+<td>${i + 1}</td>
+<td>${f.location ? escapeHtml(f.location) : "—"}</td>
+<td>${escapeHtml(f.message)}</td>
+</tr>
+`
+    )
+    .join("");
+  return `
+<h2>${meta.title} (${issues.length})</h2>
+
+<p class="fix"><strong>${meta.wcag}</strong> — Cómo corregir: ${escapeHtml(meta.fix)}</p>
+
+<table>
+
+<tr>
+<th>#</th>
+<th>Ubicación</th>
+<th>Detalle</th>
+</tr>
+${rows}
+</table>
+`;
+}
 
 export function exportReport(
   url: string,
@@ -27,6 +83,11 @@ h1{
     color:#2563eb;
 }
 
+h2{
+    color:#1e293b;
+    margin-top:32px;
+}
+
 table{
     width:100%;
     border-collapse:collapse;
@@ -36,6 +97,8 @@ table{
 th,td{
     border:1px solid #ddd;
     padding:10px;
+    text-align:left;
+    vertical-align:top;
 }
 
 th{
@@ -53,6 +116,17 @@ th{
     font-weight:bold;
 }
 
+.fix{
+    color:#555;
+    background:#f3f4f6;
+    border-left:4px solid #2563eb;
+    padding:10px 14px;
+}
+
+.fix strong{
+    color:#2563eb;
+}
+
 </style>
 
 </head>
@@ -61,7 +135,7 @@ th{
 
 <h1>Reporte de Accesibilidad</h1>
 
-<p><strong>Página:</strong> ${url}</p>
+<p><strong>Página:</strong> ${escapeHtml(url)}</p>
 
 <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
 
@@ -69,56 +143,16 @@ th{
 
 <tr>
 <th>Validación</th>
+<th>Criterio WCAG</th>
 <th>Resultado</th>
 </tr>
-
-<tr>
-<td>Contraste</td>
-<td class="${
-    diagnostics.contrast.length === 0
-      ? "ok"
-      : "error"
-}">
-${
-    diagnostics.contrast.length === 0
-      ? "Sin problemas"
-      : diagnostics.contrast.length + " problemas"
-}
-</td>
-</tr>
-
-<tr>
-<td>Imágenes ALT</td>
-<td class="${
-    diagnostics.images.length === 0
-      ? "ok"
-      : "error"
-}">
-${
-    diagnostics.images.length === 0
-      ? "Sin problemas"
-      : diagnostics.images.length + " problemas"
-}
-</td>
-</tr>
-
-<tr>
-<td>Formularios</td>
-<td class="${
-    diagnostics.forms.length === 0
-      ? "ok"
-      : "error"
-}">
-${
-    diagnostics.forms.length === 0
-      ? "Sin problemas"
-      : diagnostics.forms.length + " problemas"
-}
-</td>
-</tr>
-
+${summaryRow("contrast", diagnostics.contrast)}
+${summaryRow("images", diagnostics.images)}
+${summaryRow("forms", diagnostics.forms)}
 </table>
-
+${detailSection("contrast", diagnostics.contrast)}
+${detailSection("images", diagnostics.images)}
+${detailSection("forms", diagnostics.forms)}
 </body>
 
 </html>

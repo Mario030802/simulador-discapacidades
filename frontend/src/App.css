@@ -194,6 +194,76 @@ body{
     font-weight:bold;
 }
 
+/* Categoría con problemas: la fila se vuelve un <details> desplegable. El
+   summary hereda el layout de fila (título + badge) y el cuerpo lista la guía
+   WCAG y cada hallazgo con su ubicación. */
+details.diagnostic-details{
+    display:block;
+}
+
+details.diagnostic-details summary{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    list-style-position:inside;
+}
+
+.finding-fix{
+    margin:12px 0 8px;
+    font-size:13px;
+    color:#555;
+    background:#f3f4f6;
+    border-left:4px solid #2563eb;
+    border-radius:0 8px 8px 0;
+    padding:8px 10px;
+}
+
+.finding-fix strong{
+    color:#2563eb;
+}
+
+.finding-list{
+    margin:0;
+    padding-left:18px;
+    font-size:13px;
+    color:#374151;
+}
+
+.finding-list li{
+    padding:6px 0;
+    border-bottom:1px solid #e5e7eb;
+    overflow-wrap:anywhere;
+}
+
+.finding-list li:last-child{
+    border-bottom:none;
+}
+
+.finding-location{
+    color:#6b7280;
+}
+
+/* Tarjeta del puntaje (se usaba en DiagnosticPanel pero no estaba definida). */
+.score-card{
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:16px;
+    text-align:center;
+}
+
+.score-card h1{
+    margin:0;
+    color:#2563eb;
+}
+
+.score-card p{
+    margin:4px 0 0;
+    color:#6b7280;
+}
+
 .export-section{
     margin-top:30px;
 }

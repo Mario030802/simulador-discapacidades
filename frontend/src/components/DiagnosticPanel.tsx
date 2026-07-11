@@ -1,34 +1,63 @@
+import { CATEGORY_META } from "../utils/wcag";
+import type { CategoryKey, Diagnostics, Finding } from "../utils/wcag";
+
 type DiagnosticProps = {
-  diagnostics: {
-    contrast: string[];
-    images: string[];
-    forms: string[];
-  };
+  diagnostics: Diagnostics;
 
   onExport: () => void;
 };
 
 type ItemProps = {
-  title: string;
-  issues: string[];
+  categoryKey: CategoryKey;
+  issues: Finding[];
 };
 
 
-function DiagnosticItem({ title, issues }: ItemProps) {
+function DiagnosticItem({ categoryKey, issues }: ItemProps) {
+  const { title, wcag, fix } = CATEGORY_META[categoryKey];
   const ok = issues.length === 0;
 
-  
+  if (ok) {
+    return (
+      <div className="diagnostic-item">
+        <div>
+          <strong>{title}</strong>
+        </div>
 
-  return (
-    <div className="diagnostic-item">
-      <div>
-        <strong>{title}</strong>
+        <span className="badge-ok">OK</span>
       </div>
+    );
+  }
 
-      <span className={ok ? "badge-ok" : "badge-error"}>
-        {ok ? "OK" : issues.length}
-      </span>
-    </div>
+  // Con problemas la fila se vuelve desplegable: el resumen mantiene el badge con
+  // el conteo y al abrir se ve la guía de corrección (WCAG) y cada hallazgo con
+  // su ubicación.
+  return (
+    <details className="diagnostic-item diagnostic-details">
+      <summary>
+        <strong>{title}</strong>
+
+        <span className="badge-error">{issues.length}</span>
+      </summary>
+
+      <p className="finding-fix">
+        <strong>{wcag}</strong> — {fix}
+      </p>
+
+      <ul className="finding-list">
+        {issues.map((f, i) => (
+          <li key={i}>
+            {f.message}
+            {f.location && (
+              <>
+                {" — "}
+                <span className="finding-location">{f.location}</span>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }
 
@@ -64,17 +93,17 @@ if (score < 40) level = "Deficiente";
 </div>
 
     <DiagnosticItem
-      title="Contraste"
+      categoryKey="contrast"
       issues={diagnostics.contrast}
     />
 
     <DiagnosticItem
-      title="Imágenes sin ALT"
+      categoryKey="images"
       issues={diagnostics.images}
     />
 
     <DiagnosticItem
-      title="Formularios"
+      categoryKey="forms"
       issues={diagnostics.forms}
     />
 
@@ -86,6 +115,6 @@ if (score < 40) level = "Deficiente";
 </div>
   </div>
 
-  
+
 );
 }

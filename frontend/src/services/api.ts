@@ -1,6 +1,15 @@
+import type { Diagnostics } from "../utils/wcag";
+
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
-export async function loadUrl(url: string) {
+type LoadUrlResponse = {
+  status: string;
+  html: string;
+  screenshot?: string;
+  diagnostics: Diagnostics;
+};
+
+export async function loadUrl(url: string): Promise<LoadUrlResponse> {
   const response = await fetch(
     `${API_BASE}/api/url/load`,
     {
@@ -22,5 +31,5 @@ export async function loadUrl(url: string) {
     throw new Error(data.message || "No se pudo analizar la página.");
   }
 
-  return data;
+  return data as LoadUrlResponse;
 }
